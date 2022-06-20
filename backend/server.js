@@ -1,20 +1,30 @@
 const express=require('express')
 const notes=require('./data/notes')
 const dotenv=require('dotenv')
+const connectDB=require("./config/db")
+const userRoutes=require('./routes/userRoutes')
+const adminRoutes=require('./routes/adminRoutes')
+const { notFound, errorHandler } = require('./middlewares/errorMiddleware')
 
-const app =express()
-dotenv.config()
+const app =express();
 
-app.get('/',(req,res)=>{
-    res.send("Api is running")
-})
+dotenv.config();
+connectDB();
+
+app.use(express.json());
+
+// app.get('/',(req,res)=>{
+//     res.send("Api is running")
+// })
 
 app.get('/api/notes',(req,res)=>{
-    res.json(notes)
-})
-app.get('/api/notes/:id',(req,res)=>{
-    res.json(notes)
-})
+    res.json(notes);
+});
+
+app.use("/api/users",userRoutes);
+app.use('/api/admin',adminRoutes);
+app.use(notFound)
+app.use(errorHandler)
 
 const PORT=process.env.PORT || 5000;
 
